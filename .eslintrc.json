@@ -23,6 +23,7 @@
     "rules": {
         "react/jsx-one-expression-per-line": "off",
         "react/prop-types": "off",
+        "@typescript-eslint/ban-types": "off",
         "@typescript-eslint/explicit-function-return-type": [
             "error",
             {

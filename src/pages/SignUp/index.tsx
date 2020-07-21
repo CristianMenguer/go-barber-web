@@ -66,7 +66,7 @@ const SignUp: React.FC = () => {
                 <a href="login">
                     <FiArrowLeft />
                     Go back to Log On
-                    </a>
+                </a>
             </Content>
         </Container>
 

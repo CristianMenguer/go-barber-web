@@ -10,12 +10,20 @@ import logoImg from '../../assets/logo.svg'
 import { Container, Content, Background } from './styles'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
+import useAuth from '../../hooks/AuthContext'
+
+interface SignInFormData {
+    email: string
+    password: string
+}
 
 const SignIn: React.FC = () => {
 
     const formRef = useRef<FormHandles>(null)
 
-    const handleSubmit = useCallback(async (data: object) => {
+    const { signIn, signOut } = useAuth()
+
+    const handleSubmit = useCallback(async (data: SignInFormData) => {
         try {
 
             formRef.current?.setErrors({})
@@ -30,11 +38,18 @@ const SignIn: React.FC = () => {
                 abortEarly: false
             })
 
+            const { email, password } = data
+
+            signIn({
+                email,
+                password
+            })
+
         } catch (err) {
             const errors = getValidationErrors(err)
             formRef.current?.setErrors(errors)
         }
-    }, [])
+    }, [signIn])
 
     return (
         <>
@@ -49,6 +64,7 @@ const SignIn: React.FC = () => {
                         <Button type="submit" >Log On</Button>
                         <a href="forgot">I forgot my password</a>
                     </Form>
+                    <Button type="submit" onClick={signOut} >SingOut</Button>
                     <a href="login">
                         <FiLogIn />
                     Create account

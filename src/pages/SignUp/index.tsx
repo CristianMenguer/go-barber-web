@@ -3,7 +3,9 @@ import { FiArrowLeft, FiMail, FiLock, FiUser } from 'react-icons/fi'
 import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
 import * as Yup from 'yup'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
+
+import api from '../../services/api'
 
 import getValidationErrors from '../../utils/getValidationErrors'
 
@@ -13,7 +15,9 @@ import { Container, AnimationContainer, Content, Background } from './styles'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
 
-interface PropsSubmit {
+import { useToast } from '../../hooks/toast'
+
+interface SignUpFormData {
     name: string
     email: string
     password: string
@@ -22,8 +26,10 @@ interface PropsSubmit {
 const SignUp: React.FC = () => {
 
     const formRef = useRef<FormHandles>(null)
+    const { addToast } = useToast()
+    const history = useHistory()
 
-    const handleSubmit = useCallback(async (data: object) => {
+    const handleSubmit = useCallback(async (data: SignUpFormData) => {
         try {
 
             formRef.current?.setErrors({})
@@ -39,11 +45,31 @@ const SignUp: React.FC = () => {
                 abortEarly: false
             })
 
+            await api.post('/user', data)
+
+            addToast({
+                type: 'success',
+                title: 'User created!',
+                description: 'Please, logon to continue!'
+            })
+
+            history.push('/')
+
         } catch (err) {
-            const errors = getValidationErrors(err)
-            formRef.current?.setErrors(errors)
+            if (err instanceof Yup.ValidationError) {
+                const errors = getValidationErrors(err)
+                formRef.current?.setErrors(errors)
+
+                return
+            }
+
+            addToast({
+                type: 'error',
+                title: 'Sign up error',
+                description: 'Please, try again!'
+            })
         }
-    }, [])
+    }, [ addToast, history])
 
     return (
         <Container>
